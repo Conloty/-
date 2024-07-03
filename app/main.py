@@ -1,9 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import requests
-from bs4 import BeautifulSoup
 from flask_sqlalchemy import SQLAlchemy
-import time
 
 app = Flask(__name__)
 CORS(app)
@@ -29,18 +27,23 @@ def parse():
     data = request.get_json()
     job_title, company, city, work_format = data['jobTitle'], data['company'], data['city'], data['workFormat']
     
-    response = requests.get('https://hh.ru/search/vacancy', params={'text': f'{job_title} {company} {city} {work_format}', 'area': '1', 'per_page': 10})
+    params = {
+        'text': f'{job_title} {company} {city} {work_format}',
+        'area': '1',
+        'per_page': 10
+    }
+
+    response = requests.get('https://api.hh.ru/vacancies', params=params)
     if response.status_code == 200:
-        soup = BeautifulSoup(response.text, 'html.parser')
+        data = response.json()
         results = []
 
-        for item in soup.find_all('div', class_='vacancy-serp-item'):
-            time.sleep(1)
-            name = item.find('a', class_='bloko-link').text
-            company = item.find('div', class_='vacancy-serp-item__meta-info-company').text.strip()
-            city = item.find('span', class_='vacancy-serp-item__meta-info').text.strip()
-            work_format = item.find('span', class_='vacancy-serp-item__work-schedule').text.strip()
-            url = item.find('a', class_='bloko-link')['href']
+        for item in data['items']:
+            name = item['name']
+            company = item['employer']['name']
+            city = item['area']['name']
+            work_format = item.get('schedule', {}).get('name', '')
+            url = item['alternate_url']
             
             result = {
                 "Вакансия": name,
@@ -59,27 +62,21 @@ def parse():
                 url=url
             )
             db.session.add(vacancy)
+        
         db.session.commit()
         return jsonify(results)
+    
     else:
         return jsonify({'error': f"Ошибка: {response.status_code}"}), response.status_code
 
 @app.route('/vacancies', methods=['GET'])
 def get_vacancies():
-    job_title = request.args.get('jobTitle', '')
-    company = request.args.get('company', '')
-    city = request.args.get('city', '')
-    work_format = request.args.get('workFormat', '')
-
+    query_params = {key: request.args.get(key, '') for key in ['jobTitle', 'company', 'city', 'workFormat']}
     query = Vacancy.query
-    if job_title:
-        query = query.filter(Vacancy.name.ilike(f'%{job_title}%'))
-    if company:
-        query = query.filter(Vacancy.company.ilike(f'%{company}%'))
-    if city:
-        query = query.filter(Vacancy.city.ilike(f'%{city}%'))
-    if work_format:
-        query = query.filter(Vacancy.work_format.ilike(f'%{work_format}%'))
+
+    for key, value in query_params.items():
+        if value:
+            query = query.filter(getattr(Vacancy, key).ilike(f'%{value}%'))
 
     results = [
         {
@@ -94,3 +91,4 @@ def get_vacancies():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+
