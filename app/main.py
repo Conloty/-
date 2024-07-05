@@ -1,3 +1,4 @@
+import os
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import requests
@@ -6,7 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 CORS(app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:12345@localhost/Practice_db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'postgresql://postgres:12345@localhost/Practice_db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -71,12 +72,20 @@ def parse():
 
 @app.route('/vacancies', methods=['GET'])
 def get_vacancies():
-    query_params = {key: request.args.get(key, '') for key in ['jobTitle', 'company', 'city', 'workFormat']}
+    filters = request.args
+
+    print("Received filters:", filters)
+
     query = Vacancy.query
 
-    for key, value in query_params.items():
-        if value:
-            query = query.filter(getattr(Vacancy, key).ilike(f'%{value}%'))
+    if filters.get('jobTitle'):
+        query = query.filter(Vacancy.name.ilike(f"%{filters.get('jobTitle')}%"))
+    if filters.get('company'):
+        query = query.filter(Vacancy.company.ilike(f"%{filters.get('company')}%"))
+    if filters.get('city'):
+        query = query.filter(Vacancy.city.ilike(f"%{filters.get('city')}%"))
+    if filters.get('workFormat'):
+        query = query.filter(Vacancy.work_format.ilike(f"%{filters.get('workFormat')}%"))
 
     results = [
         {
@@ -89,6 +98,6 @@ def get_vacancies():
     ]
     return jsonify(results)
 
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
-

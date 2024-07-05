@@ -1,0 +1,125 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+  }
+  
+  .container, .results-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  
+  h1 {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .form input, .form select, .form button {
+    margin: 10px 0;
+    padding: 10px;
+    width: 100%;
+    max-width: 300px;
+    box-sizing: border-box;
+  }
+  
+  button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  
+  .content {
+    display: flex;
+    width: 100%;
+  }
+  
+  .filters {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 25%;
+    padding: 20px;
+    box-sizing: border-box;
+    text-align: center;
+  }
+  
+  .filters h2 {
+    margin-bottom: 10px;
+  }
+  
+  .filters .form {
+    width: 100%;
+  }
+  
+  .filters .form input, .filters .form select, .filters .form button {
+    margin: 5px 0;
+  }
+  
+  .results-container {
+    display: flex;
+    justify-content: center;
+    padding-top: 20px;
+  }
+  
+  .results {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 75%;
+    padding: 20px;
+    box-sizing: border-box;
+    max-width: 1000px;
+  }
+  
+  .result-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin: 10px 0;
+    width: 100%;
+    max-width: 800px; 
+    box-sizing: border-box;
+  }
+  
+  .result-header {
+    flex: 1;
+  }
+  
+  .result-header h2 {
+    margin: 0 0 10px 0;
+  }
+  
+  .result-link {
+    margin-left: auto;
+  }
+  
+  .result-link button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .result-link button:hover {
+    background-color: #0056b3;
+  }
+  
