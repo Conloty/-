@@ -18,7 +18,7 @@ class Vacancy(db.Model):
     company = db.Column(db.String(150), nullable=False)
     city = db.Column(db.String(150), nullable=False)
     work_format = db.Column(db.String(150), nullable=True)
-    url = db.Column(db.String(150), nullable=False)
+    url = db.Column(db.String(150), nullable=False, unique=True)
 
 with app.app_context():
     db.create_all()
@@ -55,14 +55,15 @@ def parse():
             }
             results.append(result)
             
-            vacancy = Vacancy(
-                name=name,
-                company=company,
-                city=city,
-                work_format=work_format,
-                url=url
-            )
-            db.session.add(vacancy)
+            if not Vacancy.query.filter_by(url=url).first():
+                vacancy = Vacancy(
+                    name=name,
+                    company=company,
+                    city=city,
+                    work_format=work_format,
+                    url=url
+                )
+                db.session.add(vacancy)
         
         db.session.commit()
         return jsonify(results)
@@ -99,3 +100,4 @@ def get_vacancies():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+
