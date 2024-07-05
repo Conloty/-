@@ -62,6 +62,8 @@ function ResultsPage() {
     fetchResults();
   };
 
+  const navigate = useNavigate();
+
   return (
     <div className="results-container">
       <div className="results-header">
@@ -71,16 +73,19 @@ function ResultsPage() {
       <div className="content">
         <div className="filters">
           <h2>Фильтры</h2>
-          <form onSubmit={handleSearch} className="form">
-            <input type="text" name="jobTitle" placeholder="Название должности" value={filters.jobTitle} onChange={handleChange} />
-            <input type="text" name="company" placeholder="Компания" value={filters.company} onChange={handleChange} />
-            <input type="text" name="city" placeholder="Город" value={filters.city} onChange={handleChange} />
-            <select name="workFormat" value={filters.workFormat} onChange={handleChange}>
-              <option value="remote">Удалёнка</option>
-              <option value="office">Офис</option>
-            </select>
-            <button type="submit">Применить фильтры</button>
-          </form>
+          <div className="form">
+            <form onSubmit={handleSearch}>
+              <input type="text" name="jobTitle" placeholder="Название должности" value={filters.jobTitle} onChange={handleChange} />
+              <input type="text" name="company" placeholder="Компания" value={filters.company} onChange={handleChange} />
+              <input type="text" name="city" placeholder="Город" value={filters.city} onChange={handleChange} />
+              <select name="workFormat" value={filters.workFormat} onChange={handleChange}>
+                <option value="remote">Удалёнка</option>
+                <option value="office">Офис</option>
+              </select>
+              <button type="submit">Применить фильтры</button>
+            </form>
+            <button onClick={() => navigate("/")}>Вернуться к поиску</button>
+          </div>
         </div>
         <div className="results">
           {results.map((result, index) => (

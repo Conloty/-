@@ -31,7 +31,7 @@ def parse():
     params = {
         'text': f'{job_title} {company} {city} {work_format}',
         'area': '1',
-        'per_page': 10
+        'per_page': 100
     }
 
     response = requests.get('https://api.hh.ru/vacancies', params=params)
@@ -73,8 +73,6 @@ def parse():
 @app.route('/vacancies', methods=['GET'])
 def get_vacancies():
     filters = request.args
-
-    print("Received filters:", filters)
 
     query = Vacancy.query
 
